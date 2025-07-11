@@ -101,3 +101,35 @@ print(q_per_token.shape)
 
 # now we do RoPe rotary positional embeddings
 
+q_per_token_split_into_pairs = q_per_token.float().view()(q_per_token.shape[0], -1, 2)
+print(q_per_token_split_into_pairs.shape)
+
+# [8, 32, 2]
+
+# here we split the query vectors into pairs we pairs and then we apply rotational angle shift to each pair
+
+# we now have a vector of size[8 x 32 x 2]
+
+zero_to_one_split_into_32_parts = torch.tensor(range(32))/32
+print(zero_to_one_split_into_32_parts)
+
+freqs = 1.0 / (rope_theta **  zero_to_one_split_into_32_parts)
+print(freqs)
+
+freqs_for_each_token = torch.outer(torch.arrange(17), freqs)
+freqs_cis = torch.polar(torch.ones_like(freqs_for_each_token), freqs_for_each_token)
+print(freqs_cis.shape)
+
+#veiwing the third row of freqs_cis
+value = freqs_cis[3]
+plt.figure()
+for i, element in enumerate(value[:17]):
+    plt.plot([0,element.real], [0, element.img], color = 'blue', linewidth=1, label=f"Index: {i}")
+    plt.annotate(f"{i}", xy=(element.real, element.imag), color='red')
+
+plt.xlabel('Real')
+plt.ylabel('Imaginary')
+plt.title('Plot of one row of freq_cis')
+plt.show()
+
+
