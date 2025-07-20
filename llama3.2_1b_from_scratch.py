@@ -453,8 +453,8 @@ def generate_text(prompt, max_tokens=50):
         
         tokens.append(next_token.item())
         
-        # break if end token
-        if next_token.item() == tokenizer.encode("<|end_of_text|>")[0]:
+        # break if end token (token 128001 is <|end_of_text|>)
+        if next_token.item() == 128001:
             break
     
     return tokenizer.decode(tokens[1:])  # skip begin token
